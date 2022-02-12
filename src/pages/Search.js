@@ -20,16 +20,21 @@ export const Search = () => {
     setLoading(false);
   };
 
-  return (
-    <section className="wrapper">
-      <h1 className="title">Found {movies.length} results for <span style={{fontStyle:"italic"}}>{keyword}</span></h1>
-      <div className="movie-content">
-        {loading ? (
-          <Loader />
-        ) : (
-          movies.map((movie, key) => <MovieCard key={key} movie={movie} />)
-        )}
-      </div>
-    </section>
+  return loading ? (
+    <Loader />
+  ) : (
+    <>
+      <section className="wrapper">
+        <h1 className="title">
+          Found {movies.length} results for{" "}
+          <span style={{ fontStyle: "italic" }}>{keyword}</span>
+        </h1>
+        <div className="movie-content">
+          {movies.map((movie, key) => (
+            <MovieCard key={key} movie={movie} />
+          ))}
+        </div>
+      </section>
+    </>
   );
 };

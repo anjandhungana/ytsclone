@@ -2,35 +2,34 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader } from "../components/common/Loader/Loader";
-import { APIGetMovieDetails } from "../API/Movie";
+import { APIGetMovieDetails, APIGetMovieSuggestList } from "../API/Movie";
+import { MovieSuggestions } from "../components/common/MovieSuggestions";
 
 export const MovieDetails = () => {
   const [movie, setMovie] = useState([]);
   const { id } = useParams();
+  const [suggestion, setSuggestion] = useState([]);
 
+  const movieSuggestions = async () => {
+    let movieSuggestList = await APIGetMovieSuggestList(id);
+    setSuggestion(movieSuggestList.data.data["movies"]);
+  };
   useEffect(async () => {
-    // axios
-    //   .get("https://yts.mx/api/v2/movie_details.json?movie_id=" + id)
-    //   .then((res) => {
-    //     setMovie(res.data.data["movie"]);
-    //   });
     await LoadMovieDetails();
+    await movieSuggestions();
   }, []);
 
   const LoadMovieDetails = async () => {
     let res = await APIGetMovieDetails(id);
-    // console.log(id);
 
     setMovie(res.data.data["movie"]);
   };
 
   return (
     <>
-      {/* {console.log(movie.length)} */}
-
-      {movie.length === 0 ? 
+      {movie.length === 0 ? (
         <Loader />
-       : 
+      ) : (
         <div className="movie-details">
           <div className="image-desc">
             <div>
@@ -44,33 +43,50 @@ export const MovieDetails = () => {
                 Download
               </div>
             </div>
-            <div>
-              <div className="description">
-                <h1>{movie.title}</h1>
-                <h2>{movie.year}</h2>
-              </div>
 
-              <div>Available in: 
-                {/* {console.log(movie.torrents)} */}
-                {movie.torrents.map((val,key)=>{
-                  // console.log(val.quality)
-                  return <span className="torrentquality" key={key}> <a href={val.url}> {val.quality} </a></span>
-                })}
-              </div>
-              
+            <div className="flex-col">
+              <div className="two-columns">
+                <div>
+                  <div>
+                    <div className="description">
+                      <h1>{movie.title}</h1>
+                      <h2>{movie.year}</h2>
+                    </div>
 
-              <div className="stats">
-                <div>
-                  <i className="fa fa-heart"></i>
-                  <h3>{movie.like_count}</h3>
+                    <div>
+                      Available in:
+                      {movie.torrents.map((val, key) => {
+                        return (
+                          <span className="torrentquality" key={key}>
+                            <a href={val.url}> {val.quality} </a>
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    <div className="stats">
+                      <div>
+                        <i className="fa fa-heart"></i>
+                        <h3>{movie.like_count}</h3>
+                      </div>
+                      <div>
+                        <i className="fa fa-download"></i>
+                        <h3>{movie.download_count}</h3>
+                      </div>
+                      <div>
+                        <i className="fa fa-star"></i>
+                        <h3>{movie.rating}</h3>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <i className="fa fa-download"></i>
-                  <h3>{movie.download_count}</h3>
-                </div>
-                <div>
-                  <i className="fa fa-star"></i>
-                  <h3>{movie.rating}</h3>
+                <div className="movie-suggestion">
+                  <h3>Similar Movies</h3>
+                  <div className="movie-grid">
+                    {suggestion.map((val,key)=>{
+                      return <MovieSuggestions cover_image={val.medium_cover_image}/>
+                    })}
+                  </div>
                 </div>
               </div>
               <div className="synopsis">
@@ -80,7 +96,7 @@ export const MovieDetails = () => {
             </div>
           </div>
         </div>
-      }
+      )}
     </>
   );
 };

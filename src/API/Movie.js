@@ -14,3 +14,7 @@ export const APIGetMovieDetails = (id) =>{
 export const APIGetSearchMovieDetails = (keyword) =>{
     return axios.get(BaseURL+'list_movies.json?query_term='+keyword)
 }
+
+export const APIGetMovieSuggestList = (id)=>{
+    return axios.get(BaseURL + 'movie_suggestions.json?movie_id='+id)
+}

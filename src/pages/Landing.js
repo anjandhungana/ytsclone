@@ -1,25 +1,30 @@
-import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import { APIGetTopMovies } from "../API/Movie";
+import { Loader } from "../components/common/Loader/Loader";
 import { MovieCard } from "../components/common/MovieCard";
+import { BaseURL } from "../config/baseURL";
+
 export const Landing = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState([]);
-  useEffect(() => {
-    axios.get("https://yts.mx/api/v2/list_movies.json").then((res) => {
-      setMovies([...res.data.data["movies"]]);
-    });
+  useEffect(async () => {
+    await LoadMovies();
   }, []);
 
-
+  const LoadMovies = async () => {
+    let res = await APIGetTopMovies();
+    setMovies([...res.data.data["movies"]]);
+  };
 
   return (
     <section className="wrapper">
-      <h1>Movies List</h1>
+      <h1 className="title">Movies List</h1>
       <div className="movie-content">
-        {movies.map((movie,key) => (
-          <MovieCard key={key}  movie={movie} />
-        ))}
+        {movies.length===0 ? <Loader/> : 
+        movies.map((movie, key) => (
+          <MovieCard key={key} movie={movie} />
+        )) }
       </div>
     </section>
   );

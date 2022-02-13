@@ -14,10 +14,17 @@ export const MovieDetails = () => {
     let movieSuggestList = await APIGetMovieSuggestList(id);
     setSuggestion(movieSuggestList.data.data["movies"]);
   };
-  useEffect(async () => {
-    await LoadMovieDetails();
-    await movieSuggestions();
+  useEffect(() => {
+    // LoadMovieDetails();
+    // movieSuggestions();
+    Promise.all([LoadMovieDetails(),movieSuggestions()])
   }, []);
+
+  useEffect(()=>{
+    LoadMovieDetails();
+    movieSuggestions();
+    // Promise.all([LoadMovieDetails(),movieSuggestions()])
+  },[id])
 
   const LoadMovieDetails = async () => {
     let res = await APIGetMovieDetails(id);
@@ -84,7 +91,7 @@ export const MovieDetails = () => {
                   <h3>Similar Movies</h3>
                   <div className="movie-grid">
                     {suggestion.map((val,key)=>{
-                      return <MovieSuggestions cover_image={val.medium_cover_image}/>
+                      return <MovieSuggestions cover_image={val.medium_cover_image} id={val.id}/>
                     })}
                   </div>
                 </div>
